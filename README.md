@@ -15,7 +15,7 @@ To discuss Janus with us and other users, there's a Google Group called [meetech
 You can use the docker image as follows:
 
 ```bash
-$ docker push canyan/janus-gateway:latest
+$ docker pull canyan/janus-gateway:latest
 ```
 
 We provide the following tags:
