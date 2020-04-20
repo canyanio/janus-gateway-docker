@@ -36,15 +36,7 @@ services:
   #
   janus-gateway:
     image: 'canyan/janus-gateway:0.9.2'
-    command:
-      - "/usr/local/bin/janus"
-      - "-P"
-      - "/usr/local/lib/janus/plugins"
-      - "-F"
-      - "/usr/local/etc/janus"
-      - "-n"
-      - "janus-gateway"
-      - "--event-handlers"
+    command: ["/usr/local/bin/janus", "-F", "/usr/local/etc/janus"]
     ports:
       - "8088:8088"
       - "8089:8089"
