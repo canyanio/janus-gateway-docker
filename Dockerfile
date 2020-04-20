@@ -74,17 +74,18 @@ RUN apt-get -y update && \
 	apt-get clean && \
 	rm -rf /var/lib/apt/lists/*
 
-COPY --from=0 /usr/local/bin/janus /usr/local/bin/janus
-COPY --from=0 /usr/local/bin/janus-cfgconv /usr/local/bin/janus-cfgconv
-COPY --from=0 /usr/local/etc/janus /usr/local/etc/janus
-COPY --from=0 /usr/local/lib/janus /usr/local/lib/janus
-COPY --from=0 /usr/local/share/janus /usr/local/share/janus
 COPY --from=0 /usr/lib/libsrtp2.so /usr/lib/libsrtp2.so
 COPY --from=0 /usr/lib/libsrtp2.so.1 /usr/lib/libsrtp2.so.1
 COPY --from=0 /usr/lib/libnice.la /usr/lib/libnice.la
 COPY --from=0 /usr/lib/libnice.so /usr/lib/libnice.so
 COPY --from=0 /usr/lib/libnice.so.10 /usr/lib/libnice.so.10
 COPY --from=0 /usr/lib/libnice.so.10.9.0 /usr/lib/libnice.so.10.9.0
+
+COPY --from=0 /usr/local/bin/janus /usr/local/bin/janus
+COPY --from=0 /usr/local/bin/janus-cfgconv /usr/local/bin/janus-cfgconv
+COPY --from=0 /usr/local/etc/janus /usr/local/etc/janus
+COPY --from=0 /usr/local/lib/janus /usr/local/lib/janus
+COPY --from=0 /usr/local/share/janus /usr/local/share/janus
 
 EXPOSE 10000-10200/udp
 EXPOSE 8088
