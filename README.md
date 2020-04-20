@@ -58,7 +58,7 @@ services:
     restart: always
 ```
 
-## Authoris
+## Authors
 
 This dockerfile is maintained by Canyan.io.
 
