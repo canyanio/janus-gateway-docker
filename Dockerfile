@@ -63,6 +63,7 @@ ARG VERSION="undefined"
 LABEL build_date=${BUILD_DATE}
 LABEL git_branch=${GIT_BRANCH}
 LABEL git_commit=${GIT_COMMIT}
+LABEL version=${VERSION}
 
 RUN apt-get -y update && \
 	apt-get install -y \
