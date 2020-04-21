@@ -20,8 +20,9 @@ build:
     - export BUILD_DATE=$(date -u +'%Y-%m-%dT%H:%M:%SZ')
     - export GIT_BRANCH=$(git rev-parse --abbrev-ref HEAD)
     - export GIT_COMMIT=$(git rev-parse HEAD)
-    - export VERSION=$(git name-rev --tags --name-only $GIT_COMMIT)
-    - docker build  -f ../Dockerfile -t $DOCKER_IMAGE --no-cache=true --build-arg BUILD_DATE=${BUILD_DATE} --build-arg GIT_BRANCH=${GIT_BRANCH} --build-arg GIT_COMMIT=${GIT_COMMIT} --build-arg VERSION=${VERSION} .
+    - export VERSION=$(git name-rev --tags --name-only $GIT_COMMIT | cut -d"^" -f1 | sed -e 's/^v//g')
+    - echo "BUILD_DATE=${BUILD_DATE} GIT_BRANCH=${GIT_BRANCH} GIT_COMMIT=${GIT_COMMIT} VERSION=${VERSION}"
+    - docker build -f ../Dockerfile -t $DOCKER_IMAGE --no-cache=true --build-arg BUILD_DATE=${BUILD_DATE} --build-arg GIT_BRANCH=${GIT_BRANCH} --build-arg GIT_COMMIT=${GIT_COMMIT} --build-arg VERSION=${VERSION} .
     - docker save $DOCKER_IMAGE > ../image.tar
   artifacts:
     expire_in: 2w
@@ -42,19 +43,26 @@ publish:
     - echo -n $DOCKER_HUB_PASSWORD | docker login -u $DOCKER_HUB_USERNAME --password-stdin
     - export GIT_BRANCH=$(docker inspect $DOCKER_IMAGE | grep git_branch | head -n1 | cut -d'"' -f4)
     - export GIT_COMMIT=$(docker inspect $DOCKER_IMAGE | grep git_commit | head -n1 | cut -d'"' -f4)
-    - export VERSION=$(docker inspect $DOCKER_IMAGE | grep git_commit | head -n1 | cut -d'"' -f4)
+    - export VERSION=$(docker inspect $DOCKER_IMAGE | grep version | head -n1 | cut -d'"' -f4)
     - export VERSION_MAJOR=$(echo $VERSION | cut -d"." -f 1,2)
-    - docker tag $DOCKER_IMAGE $DOCKER_REPOSITORY:${GIT_BRANCH}
-    - docker tag $DOCKER_IMAGE $DOCKER_REPOSITORY:${GIT_BRANCH}_${GIT_COMMIT}
-    - if [ -n "VERSION" ]; then
-        docker tag $DOCKER_IMAGE $DOCKER_REPOSITORY:${VERSION};
-        docker tag $DOCKER_IMAGE $DOCKER_REPOSITORY:${VERSION_MAJOR};
+    - if [ "${GIT_BRANCH}" != "HEAD" ]; then
+        echo "Tagging and uploading $DOCKER_REPOSITORY:${GIT_BRANCH}";
+        docker tag $DOCKER_IMAGE $DOCKER_REPOSITORY:${GIT_BRANCH};
+        docker push $DOCKER_REPOSITORY:${GIT_BRANCH};
+        echo "Tagging and uploading $DOCKER_REPOSITORY:${GIT_BRANCH}_${GIT_COMMIT}";
+        docker tag $DOCKER_IMAGE $DOCKER_REPOSITORY:${GIT_BRANCH}_${GIT_COMMIT};
+        docker push $DOCKER_REPOSITORY:${GIT_BRANCH}_${GIT_COMMIT};
       fi
-    - docker push $DOCKER_REPOSITORY:${GIT_BRANCH}
-    - docker push $DOCKER_REPOSITORY:${GIT_BRANCH}_${GIT_COMMIT}
-    - if [ -n "VERSION" ]; then
+    - if [ -n "${VERSION}" ] && [ "${VERSION}" != "undefined" ]; then
+        echo "Tagging and uploading $DOCKER_REPOSITORY:${VERSION}";
+        docker tag $DOCKER_IMAGE $DOCKER_REPOSITORY:${VERSION};
         docker push $DOCKER_REPOSITORY:${VERSION};
+        echo "Tagging and uploading $DOCKER_REPOSITORY:${VERSION_MAJOR}";
+        docker tag $DOCKER_IMAGE $DOCKER_REPOSITORY:${VERSION_MAJOR};
         docker push $DOCKER_REPOSITORY:${VERSION_MAJOR};
+        echo "Tagging and uploading $DOCKER_REPOSITORY:latest";
+        docker tag $DOCKER_IMAGE $DOCKER_REPOSITORY:latest;
+        docker push $DOCKER_REPOSITORY:latest;
       fi
   tags:
     - docker
