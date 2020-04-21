@@ -15,9 +15,13 @@ build:
     - docker:dind
   script:
     - apk add git
-    - git clone https://github.com/meetecho/janus-gateway.git --branch $BRANCH_NAME --single-branch --depth=1
+    - git clone https://github.com/meetecho/janus-gateway.git --branch $BRANCH_NAME
     - cd janus-gateway
-    - docker build -t $DOCKER_IMAGE -f ../Dockerfile .
+    - export BUILD_DATE=$(date -u +'%Y-%m-%dT%H:%M:%SZ')
+    - export GIT_BRANCH=$(git rev-parse --abbrev-ref HEAD)
+    - export GIT_COMMIT=$(git rev-parse HEAD)
+    - export VERSION=$(git name-rev --tags --name-only $GIT_COMMIT)
+    - docker build  -f ../Dockerfile -t $DOCKER_IMAGE --no-cache=true --build-arg BUILD_DATE=${BUILD_DATE} --build-arg GIT_BRANCH=${GIT_BRANCH} --build-arg GIT_COMMIT=${GIT_COMMIT} --build-arg VERSION=${VERSION} .
     - docker save $DOCKER_IMAGE > ../image.tar
   artifacts:
     expire_in: 2w
@@ -36,6 +40,21 @@ publish:
   script:
     - docker load -i image.tar
     - echo -n $DOCKER_HUB_PASSWORD | docker login -u $DOCKER_HUB_USERNAME --password-stdin
-    - docker push $DOCKER_IMAGE
+    - export GIT_BRANCH=$(docker inspect $DOCKER_IMAGE | grep git_branch | head -n1 | cut -d'"' -f4)
+    - export GIT_COMMIT=$(docker inspect $DOCKER_IMAGE | grep git_commit | head -n1 | cut -d'"' -f4)
+    - export VERSION=$(docker inspect $DOCKER_IMAGE | grep git_commit | head -n1 | cut -d'"' -f4)
+    - export VERSION_MAJOR=$(echo $VERSION | cut -d"." -f 1,2)
+    - docker tag $DOCKER_IMAGE $DOCKER_REPOSITORY:${GIT_BRANCH}
+    - docker tag $DOCKER_IMAGE $DOCKER_REPOSITORY:${GIT_BRANCH}_${GIT_COMMIT}
+    - if [ -n "VERSION" ]; then
+        docker tag $DOCKER_IMAGE $DOCKER_REPOSITORY:${VERSION};
+        docker tag $DOCKER_IMAGE $DOCKER_REPOSITORY:${VERSION_MAJOR};
+      fi
+    - docker push $DOCKER_REPOSITORY:${GIT_BRANCH}
+    - docker push $DOCKER_REPOSITORY:${GIT_BRANCH}_${GIT_COMMIT}
+    - if [ -n "VERSION" ]; then
+        docker push $DOCKER_REPOSITORY:${VERSION};
+        docker push $DOCKER_REPOSITORY:${VERSION_MAJOR};
+      fi
   tags:
     - docker
