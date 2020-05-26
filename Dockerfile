@@ -89,9 +89,9 @@ COPY --from=0 /usr/lib/libsrtp2.so.1 /usr/lib/libsrtp2.so.1
 RUN ln -s /usr/lib/libsrtp2.so.1 /usr/lib/libsrtp2.so
 
 COPY --from=0 /usr/lib/libnice.la /usr/lib/libnice.la
-COPY --from=0 /usr/lib/libnice.so.10.9.0 /usr/lib/libnice.so.10.9.0
-RUN ln -s /usr/lib/libnice.so.10.9.0 /usr/lib/libnice.so.10
-RUN ln -s /usr/lib/libnice.so.10.9.0 /usr/lib/libnice.so
+COPY --from=0 /usr/lib/libnice.so.10.10.0 /usr/lib/libnice.so.10.10.0
+RUN ln -s /usr/lib/libnice.so.10.10.0 /usr/lib/libnice.so.10
+RUN ln -s /usr/lib/libnice.so.10.10.0 /usr/lib/libnice.so
 
 COPY --from=0 /usr/local/bin/janus /usr/local/bin/janus
 COPY --from=0 /usr/local/bin/janus-cfgconv /usr/local/bin/janus-cfgconv
