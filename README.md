@@ -21,8 +21,8 @@ $ docker pull canyan/janus-gateway:latest
 We provide the following tags:
 
 * **latest**: points to the latest stable version
-* **full version number (e.g., 0.9.2)**
-* **major version number (e.g., 0.9)**
+* **full version number (e.g., 0.10.7)**
+* **major version number (e.g., 0.10)**
 * **master**: daily rebuild of the master branch
 
 You can use the docker-image in a docker-compose project including:
@@ -35,7 +35,7 @@ services:
   # janus-gateway
   #
   janus-gateway:
-    image: 'canyan/janus-gateway:0.9.2'
+    image: 'canyan/janus-gateway:0.10.7'
     command: ["/usr/local/bin/janus", "-F", "/usr/local/etc/janus"]
     ports:
       - "8188:8188"
