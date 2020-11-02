@@ -38,6 +38,7 @@ services:
     image: 'canyan/janus-gateway:0.9.2'
     command: ["/usr/local/bin/janus", "-F", "/usr/local/etc/janus"]
     ports:
+      - "8188:8188"
       - "8088:8088"
       - "8089:8089"
       - "8889:8889"
