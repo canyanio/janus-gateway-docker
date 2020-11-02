@@ -54,7 +54,7 @@ RUN cd /usr/local/src/janus-gateway && \
 	make install && \
 	make configs
 
-FROM debian:buster-slim
+FROM debian:bullseye-slim
 
 ARG BUILD_DATE="undefined"
 ARG GIT_BRANCH="undefined"
@@ -79,7 +79,7 @@ RUN apt-get -y update && \
 		liblua5.3-0 \
 		libconfig9 \
 		libusrsctp1 \
-		libwebsockets8 \
+		libwebsockets16 \
 		libnanomsg5 \
 		librabbitmq4 && \
 	apt-get clean && \
