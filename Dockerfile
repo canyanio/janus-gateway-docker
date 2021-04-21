@@ -2,6 +2,9 @@ FROM debian:bullseye-slim
 
 RUN apt-get -y update && \
 	apt-get install -y \
+		libavutil-dev \
+		libavformat-dev \
+		libavcodec-dev \
 		libmicrohttpd-dev \
 		libjansson-dev \
 		libssl-dev \
@@ -49,7 +52,7 @@ COPY . /usr/local/src/janus-gateway
 
 RUN cd /usr/local/src/janus-gateway && \
 	sh autogen.sh && \
-	./configure --prefix=/usr/local && \
+	./configure --enable-post-processing --prefix=/usr/local && \
 	make && \
 	make install && \
 	make configs
@@ -69,6 +72,9 @@ LABEL version=${VERSION}
 RUN apt-get -y update && \
 	apt-get install -y \
 		libmicrohttpd12 \
+		libavutil-dev \
+		libavformat-dev \
+		libavcodec-dev \
 		libjansson4 \
 		libssl1.1 \
 		libsofia-sip-ua0 \
@@ -94,6 +100,7 @@ RUN ln -s /usr/lib/libnice.so.10.10.0 /usr/lib/libnice.so.10
 RUN ln -s /usr/lib/libnice.so.10.10.0 /usr/lib/libnice.so
 
 COPY --from=0 /usr/local/bin/janus /usr/local/bin/janus
+COPY --from=0 /usr/local/bin/janus-pp-rec /usr/local/bin/janus-pp-rec
 COPY --from=0 /usr/local/bin/janus-cfgconv /usr/local/bin/janus-cfgconv
 COPY --from=0 /usr/local/etc/janus /usr/local/etc/janus
 COPY --from=0 /usr/local/lib/janus /usr/local/lib/janus
