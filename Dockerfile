@@ -43,16 +43,17 @@ RUN cd /tmp && \
 	git clone https://gitlab.freedesktop.org/libnice/libnice && \
 	cd libnice && \
 	git checkout 0.1.17 && \
-	./autogen.sh && \
-	./configure --prefix=/usr && \
+	/tmp/libnice/autogen.sh && \
+	/tmp/libnice/configure --prefix=/usr && \
 	make && \
 	make install
 
-COPY . /usr/local/src/janus-gateway
-
-RUN cd /usr/local/src/janus-gateway && \
-	sh autogen.sh && \
-	./configure --enable-post-processing --prefix=/usr/local && \
+RUN cd /tmp && \
+	git clone https://github.com/meetecho/janus-gateway && \
+        cd janus-gateway && \
+        git checkout tags/v0.11.8 -b v0.11.8 && \
+	/tmp/janus-gateway/autogen.sh && \
+	/tmp/janus-gateway/configure --enable-post-processing --prefix=/usr/local && \
 	make && \
 	make install && \
 	make configs
